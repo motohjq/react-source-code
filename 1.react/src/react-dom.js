@@ -231,6 +231,7 @@ function mountClassComponent(vdom) {
     if (type.contextType) {
         classInstance.context = type.contextType._currentValue;
     }
+    //让这个类组件的虚拟dom的classInstance属性指向这个类组件的实例
     vdom.classInstance = classInstance;
     if (classInstance.componentWillMount) classInstance.componentWillMount();
     // 调用实例的render方法返回需要渲染的虚拟DOM对象
@@ -251,6 +252,7 @@ function mountClassComponent(vdom) {
 function mountFunctionComponent(vdom) {
     let { type: FunctionComponent, props } = vdom;
     let renderVdom = FunctionComponent(props);
+    //让这个类组件的虚拟dom的oldRenderVdom属性指向这个组件的实例
     vdom.oldRenderVdom = renderVdom;
     return createDOM(renderVdom);
 }
@@ -305,9 +307,9 @@ export function findDOM(vdom) {
 /**
  * 比较新旧的虚拟DOM，找出差异，更新到真实DOM上
  * 现在还没有实现dom-diff
- * @param {*} parentDOM 
- * @param {*} oldVdom 
- * @param {*} newVdom 
+ * @param {*} parentDOM 当前组件挂载父真实dom节点
+ * @param {*} oldVdom 上一次老的虚拟dom
+ * @param {*} newVdom 这一次新的虚拟dom
  */
 export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDOM) {
     if (!oldVdom && !newVdom) {//如果老的虚拟DOM是null,新的虚拟DOM也是null
@@ -338,6 +340,11 @@ export function compareTwoVdom(parentDOM, oldVdom, newVdom, nextDOM) {
         updateElement(oldVdom, newVdom);
     }
 }
+/**
+ * 深度比较两个dom
+ * @param {*} oldVdom 老的虚拟dom 
+ * @param {*} newVdom 新的虚拟dom
+ */
 function updateElement(oldVdom, newVdom) {
     if (oldVdom.type && oldVdom.type.$$typeof === REACT_MEMO) {
         updateMemoComponent(oldVdom, newVdom);
@@ -354,6 +361,7 @@ function updateElement(oldVdom, newVdom) {
         let currentDOM = newVdom.dom = findDOM(oldVdom);
         //用新的属性更新DOM的老属性
         updateProps(currentDOM, oldVdom.props, newVdom.props);
+        //更新儿子们
         updateChildren(currentDOM, oldVdom.props.children, newVdom.props.children);
     } else if (typeof oldVdom.type === 'function') {
         if (oldVdom.type.isReactComponent) {

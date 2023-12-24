@@ -69,7 +69,7 @@ class Updater {
     this.pendingStates.push(partialState);
     if (typeof callback === 'function')
       this.callbacks.push(callback)
-    this.emitUpdate();//触发更新逻辑   
+    this.emitUpdate();//触发更新逻辑   不传参是因为改变的是state
   }
   //不管状态和属性的变化 都会让组件刷新，不管状态变化和属性变化 都会执行此方法
   emitUpdate(nextProps) {
@@ -104,6 +104,12 @@ class Updater {
     return state;//返回新状态
   }
 }
+/**
+ * 判断组件是否需要更新
+ * @param {*} classInstance 组件实例
+ * @param {*} nextProps 
+ * @param {*} nextState 新的状态
+ */
 function shouldUpdate(classInstance, nextProps, nextState) {
   let willUpdate = true;//是否要更新，默认值是true
   if (classInstance.shouldComponentUpdate//有此方法
@@ -111,7 +117,7 @@ function shouldUpdate(classInstance, nextProps, nextState) {
     willUpdate = false;
   }
   if (willUpdate && classInstance.componentWillUpdate) {
-    classInstance.componentWillUpdate();
+    classInstance.componentWillUpdate(); // componentWillUpdate函数是在组件实例中声明实现的
   }
   //其实不管要不要更新属性和状态都要更新为最新的
   if (nextProps) classInstance.props = nextProps;
@@ -159,7 +165,7 @@ export class Component {
     compareTwoVdom(oldDOM.parentNode, oldRenderVdom, newRenderVdom);//比较差异，把更新同步到真实DOM上
     this.oldRenderVdom = newRenderVdom;
     if (this.componentDidUpdate) {
-      this.componentDidUpdate(this.props, this.state, extraArgs);
+      this.componentDidUpdate(this.props, this.state, extraArgs); // componentDidUpdate函数是在组件实例中声明实现的
     }
   }
 }
