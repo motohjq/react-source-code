@@ -1,6 +1,6 @@
 import { findDOM, compareTwoVdom } from './react-dom';
 import { shallowEqual } from './utils';
-export let updateQueue = {
+export let updateQueue = {//这里用到了单例模式，全局共享一个更新队列
   isBatchingUpdate: false,//通过此变量来控制是否批量更新，默认值为直接更新不批量合并
   updaters: [],
   batchUpdate() {//在每个事件（例如onClick)函数中最后都会执行这个函数，触发批量更新
@@ -114,14 +114,14 @@ function shouldUpdate(classInstance, nextProps, nextState) {
   let willUpdate = true;//是否要更新，默认值是true
   if (classInstance.shouldComponentUpdate//有此方法
     && (!classInstance.shouldComponentUpdate(nextProps, nextState))) {//并且方法的返回值为false
-    willUpdate = false;
+    willUpdate = false;//这时候shouldComponentUpdate是false 说明不需要更新
   }
-  if (willUpdate && classInstance.componentWillUpdate) {
+  if (willUpdate && classInstance.componentWillUpdate) {//这时候shouldComponentUpdate是true 说明需要更新
     classInstance.componentWillUpdate(); // componentWillUpdate函数是在组件实例中声明实现的
   }
   //其实不管要不要更新属性和状态都要更新为最新的
   if (nextProps) classInstance.props = nextProps;
-  if (classInstance.constructor.getDerivedStateFromProps) {
+  if (classInstance.constructor.getDerivedStateFromProps) {//getDerivedStateFromProps是静态static方法，静态方法都挂载到实例的constructor身上
     let nextState = classInstance.constructor.getDerivedStateFromProps(nextProps, classInstance.state);
     if (nextState) {
       classInstance.state = nextState;

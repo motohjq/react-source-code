@@ -1,5 +1,10 @@
 import { REACT_TEXT, REACT_FORWARD_REF_TYPE, REACT_PROVIDER, REACT_CONTEXT, REACT_MEMO } from './constants';
 import { addEvent } from './event';
+
+//vdom是createElement之后的结果 let vdom = createElement(vdom); 如 {type,props,ref,key}
+
+//renderVdom是组件return的内容形成的渲染虚拟DOM
+
 let mountingComponent = null;
 /**
  * 把虚拟DOM转成真实DOM插入容器中
@@ -363,10 +368,10 @@ function updateElement(oldVdom, newVdom) {
         updateProps(currentDOM, oldVdom.props, newVdom.props);
         //更新儿子们
         updateChildren(currentDOM, oldVdom.props.children, newVdom.props.children);
-    } else if (typeof oldVdom.type === 'function') {
-        if (oldVdom.type.isReactComponent) {
+    } else if (typeof oldVdom.type === 'function') {//这时候老的新的type一样
+        if (oldVdom.type.isReactComponent) {//老的新的都是类组件
             updateClassComponent(oldVdom, newVdom);
-        } else {
+        } else {//老的新的都是函数组件
             updateFunctionComponent(oldVdom, newVdom);
         }
     }
@@ -415,20 +420,28 @@ function updateContextComponent(oldVdom, newVdom) {
 function updateFunctionComponent(oldVdom, newVdom) {
     let parentDOM = findDOM(oldVdom).parentNode;
     let { type, props } = newVdom;
-    let renderVdom = type(props);
+    let renderVdom = type(props);//新的vdom div#counter-function>2
+    //oldVdom.oldRenderVdom老的渲染出来的vdom div#counter-function>0
     compareTwoVdom(parentDOM, oldVdom.oldRenderVdom, renderVdom);
     newVdom.oldRenderVdom = renderVdom;
 }
+/**
+ * 如果老的虚拟DOM节点和新的虚拟DOM节点都是类组件，走这个逻辑
+ * @param {*} oldVdom 老的虚拟DOM节点
+ * @param {*} newVdom 新的虚拟DOM节点
+ */
 function updateClassComponent(oldVdom, newVdom) {
-    let classInstance = newVdom.classInstance = oldVdom.classInstance;
-    newVdom.oldRenderVdom = oldVdom.oldRenderVdom;
+    let classInstance = newVdom.classInstance = oldVdom.classInstance;//类的实例需要复用，实例不管更新多少次只有一个
+    newVdom.oldRenderVdom = oldVdom.oldRenderVdom;//上一次这个类组件渲染出来的虚拟DOM
     //因为此更新是由于父组件更新引起的，父组件在重新渲染的时候，给子组件传递新的属性
-    if (classInstance.componentWillReceiveProps) {
+    if (classInstance.componentWillReceiveProps) {//组件将要接受到新的属性
         classInstance.componentWillReceiveProps();
     }
+    //触发组件的更新
     classInstance.updater.emitUpdate(newVdom.props);
 }
 function updateChildren(parentDOM, oldVChildren, newVChildren) {
+    // 因为children可能是对象，也可能是数组，为了方便按索引比较，全部格式化为数组
     oldVChildren = Array.isArray(oldVChildren) ? oldVChildren : [oldVChildren];
     newVChildren = Array.isArray(newVChildren) ? newVChildren : [newVChildren];
     let maxLength = Math.max(oldVChildren.length, newVChildren.length);
