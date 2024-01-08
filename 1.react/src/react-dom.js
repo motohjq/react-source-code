@@ -17,8 +17,9 @@ let scheduleUpdate;//调度更新方法
 function render(vdom, container) {
     mount(vdom, container);
     scheduleUpdate = () => {
-        hookIndex = 0;//vdom并不指向当前的更新，而是指向根元素
-        compareTwoVdom(container, vdom, vdom);
+        hookIndex = 0;//在状态修改后调试更新的时候，索引重置为0
+        //然后再进行虚拟DOM的比较更新
+        compareTwoVdom(container, vdom, vdom);//vdom并不指向当前的更新，而是指向根元素，因为render函数执行的是根元素
     }
 }
 function mount(vdom, container) {

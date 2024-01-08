@@ -171,6 +171,7 @@ export class Component {
 }
 
 export class PureComponent extends Component {
+  //对shouldComponentUpdate进行重写
   shouldComponentUpdate(nextProps, nextState) {
     return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState)
   }
