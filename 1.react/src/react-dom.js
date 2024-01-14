@@ -35,7 +35,7 @@ export function useRef() {
         return hookState[hookIndex++];
     }
 }
-/**
+/** 为了保证此回调函数不是同步执行，而是在页面渲染之后执行
  * @param {*} callback 当前渲染完成之后下一个宏任务
  * @param {*} deps 依赖数组，
  */
@@ -116,7 +116,7 @@ export function useState(initialState) {
 export function useMemo(factory, deps) {
     if (hookState[hookIndex]) {//说明不是第一次是更新
         let [lastMemo, lastDeps] = hookState[hookIndex];
-        let everySame = deps.every((item, index) => item === lastDeps[index]);
+        let everySame = deps.every((item, index) => item === lastDeps[index]);//和上一次对比是否相同
         if (everySame) {
             hookIndex++;
             return lastMemo;
@@ -134,7 +134,7 @@ export function useMemo(factory, deps) {
 export function useCallback(callback, deps) {
     if (hookState[hookIndex]) {//说明不是第一次是更新
         let [lastCallback, lastDeps] = hookState[hookIndex];
-        let everySame = deps.every((item, index) => item === lastDeps[index]);
+        let everySame = deps.every((item, index) => item === lastDeps[index]);//和上一次对比是否相同
         if (everySame) {
             hookIndex++;
             return lastCallback;
