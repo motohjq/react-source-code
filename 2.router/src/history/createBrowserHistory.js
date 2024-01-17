@@ -21,7 +21,9 @@ function createBrowserHistory(props) {
       listeners = listeners.filter(l => l !== listener);
     }
   }
+  //globalHistory.go goBack goForward 点浏览器回退按钮都会触发这个监听
   window.addEventListener('popstate', (event) => {//push入栈 pop类似于出栈
+    //点击浏览器回退按钮，退到哪是在globalHistory里维护的，只能取回退之后最新的路径和状态
     setState({ action: 'POP', location: { state: event.state, pathname: window.location.pathname } });
   });
   function setState(newState) {
@@ -50,6 +52,7 @@ function createBrowserHistory(props) {
       let allow = userConfirm(message);
       if (!allow) return;
     }
+    //pushState原生方法
     globalHistory.pushState(state, null, pathname);
     let location = { state, pathname };
     setState({ action, location });

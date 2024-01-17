@@ -1,13 +1,17 @@
 let pathToRegExp = require('path-to-regexp');
 function compilePath(path, options) {
-    const keys = [];
+    const keys = [];//处理路径参数
     const regexp = pathToRegExp(path, keys, options);
     return { keys, regexp };
 }
 /**
  * 把地址中的路径和属性中的path进行匹配，返回匹配结果 
- * @param {*} pathname  地址中的路径
- * @param {*} options 属性对象
+ * @param {*} pathname  浏览器当前的真实的路径名
+ * @param {*} options 属性对象，其实就是Route组件的属性 path Component exact
+ * path Route的路径
+ * exact Route的路径是否精确匹配 后面能不能跟子路径
+ * strict Route的路径是否严格匹配 后面能不能有可选地
+ * sensitive Route的路径是否区分大小写
  */
 function matchPath(pathname, options = {}) {
     let { path = "/", exact = false, strict = false, sensitive = false } = options;

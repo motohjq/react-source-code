@@ -10,13 +10,13 @@ class Route extends React.Component {
   static contextType = RouterContext;
   render() {
     let { history, location } = this.context;//static contextType=>this.context
-    let { component: RouteComponent, computedMatch, render, children } = this.props;
+    let { component: RouteComponent, computedMatch, render, children } = this.props;//computedMatch是在Switch组件中计算出来传入的
     let match = computedMatch ? computedMatch : matchPath(location.pathname, this.props);
     //let match = location.pathname === path;//如果两个一样匹配上了
     let renderElement = null;
     let routeProps = { history, location };
     if (match) {
-      routeProps.match = match;
+      routeProps.match = match;//路由属性 如果一个组件是Route或者说路由组件渲染的，他们routeProps={}
       if (RouteComponent) {
         renderElement = <RouteComponent {...routeProps} />;
       } else if (render) {
