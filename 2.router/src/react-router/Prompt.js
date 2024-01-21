@@ -1,10 +1,10 @@
 import React from 'react';
 import RouterContext from './RouterContext';
 import LifeCycle from './LifeCycle';
-function Prompt(props){
+function Prompt(props) {
     let value = React.useContext(RouterContext);
-    React.useEffect(()=>{
-        return  value.history.block(props.message)
+    React.useEffect(() => {
+        return value.history.block(props.message)
     });
     return null;
 }
@@ -21,7 +21,13 @@ function Prompt(props){
         return  null;
     }
 } */
-/* function Prompt({when,message}){
+/**
+ * 
+ * @param {*} when 布尔值表示要不要阻止跳转
+ * @param {*} message 是一个函数 表示跳转前的提示信息
+ * 
+ */
+/*function Prompt({when,message}){
     return (
         <RouterContext.Consumer>
             {
@@ -41,6 +47,6 @@ function Prompt(props){
             }
         </RouterContext.Consumer>
     )
-} */
+}*/
 
 export default Prompt;
