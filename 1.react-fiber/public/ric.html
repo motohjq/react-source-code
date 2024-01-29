@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+  <script>
+    function sleep(duration) {
+      let start = Date.now();
+      while (start + duration > Date.now()) {
+
+      }
+    }
+    const works = [
+      () => {
+        console.log('A1开始');
+        sleep(10);
+        console.log('A1结束');
+      },
+      () => {
+        console.log('B1开始');
+        sleep(10);
+        console.log('B1结束');
+      },
+      () => {
+        console.log('C1开始');
+        sleep(10);
+        console.log('C1结束');
+      },
+      () => {
+        console.log('D1开始');
+        sleep(10);
+        console.log('D1结束');
+      },
+      () => {
+        console.log('E1开始');
+        sleep(10);
+        console.log('E2结束');
+      },
+    ]
+    // 告诉浏览器，可以在空闲的时候执行任务，但是如果已经过期了，不管有没有空，都要执行
+    requestIdleCallback(workLoop, { timeout: 1000 });
+    //循环执行工具
+    function workLoop(deadline) {
+      console.log('本帧的剩余时间', parseInt(deadline.timeRemaining()));
+      //如果说还有剩余时间 并且还有没有完成的任务
+      while ((deadline.timeRemaining() > 0 || deadline.didTimeout) && works.length > 0) {
+        //第一个任务A1执行花了20ms
+        performUnitOfWork();
+      }
+      if (works.length > 0) {
+        console.log('只剩下 ', deadline.timeRemaining());
+        requestIdleCallback(workLoop)
+      }
+    }
+    function performUnitOfWork() {
+      let work = works.shift();//取出工作数组中的第一个元素
+      work();
+    }
+  </script>
+</body>
+
+</html>
